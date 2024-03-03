@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class TupleDesc implements Serializable {
 
+    private final TDItem[] tdItems;
     /**
      * A help class to facilitate organizing the information of each field
      * */
@@ -43,8 +44,7 @@ public class TupleDesc implements Serializable {
      *        that are included in this TupleDesc
      * */
     public Iterator<TDItem> iterator() {
-        // some code goes here
-        return null;
+        return Arrays.asList(tdItems).iterator();
     }
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +61,10 @@ public class TupleDesc implements Serializable {
      *            be null.
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
+        tdItems = new TDItem[typeAr.length];
+        for(int i = 0; i < typeAr.length ; i++){
+            tdItems[i] = new TDItem(typeAr[i], fieldAr[i]);
+        }
         // some code goes here
     }
 
@@ -73,6 +77,11 @@ public class TupleDesc implements Serializable {
      *            TupleDesc. It must contain at least one entry.
      */
     public TupleDesc(Type[] typeAr) {
+        tdItems = new TDItem[typeAr.length];
+        for(int i=0;i<typeAr.length;i++)
+        {
+            tdItems[i] = new TDItem(typeAr[i],"");
+        }
         // some code goes here
     }
 
@@ -81,7 +90,7 @@ public class TupleDesc implements Serializable {
      */
     public int numFields() {
         // some code goes here
-        return 0;
+        return tdItems.length;
     }
 
     /**
@@ -95,7 +104,7 @@ public class TupleDesc implements Serializable {
      */
     public String getFieldName(int i) throws NoSuchElementException {
         // some code goes here
-        return null;
+        return tdItems[i].fieldName;
     }
 
     /**
@@ -110,7 +119,7 @@ public class TupleDesc implements Serializable {
      */
     public Type getFieldType(int i) throws NoSuchElementException {
         // some code goes here
-        return null;
+        return tdItems[i].fieldType;
     }
 
     /**
@@ -124,7 +133,12 @@ public class TupleDesc implements Serializable {
      */
     public int fieldNameToIndex(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        for(int i=0;i<tdItems.length;i++)
+        {
+            if(tdItems[i].fieldName == name)
+                return i;
+        }
+        throw new NoSuchElementException("not found" + name);
     }
 
     /**
@@ -133,6 +147,11 @@ public class TupleDesc implements Serializable {
      */
     public int getSize() {
         // some code goes here
+        int size = 0;
+        for(int i=0;i<tdItems.length;i++)
+        {
+            size += tdItems[i].fieldType.getLen();
+        }
         return 0;
     }
 
@@ -148,6 +167,7 @@ public class TupleDesc implements Serializable {
      */
     public static TupleDesc merge(TupleDesc td1, TupleDesc td2) {
         // some code goes here
+        for()
         return null;
     }
 
@@ -163,6 +183,17 @@ public class TupleDesc implements Serializable {
      */
 
     public boolean equals(Object o) {
+        if(this.getClass().isInstance(o))
+        {
+            TupleDesc tupleDesc = (TupleDesc) o;
+            if(numFields() == tupleDesc.numFields())
+            {
+                for(int i=0; i < numFields(); i++)
+                    if(!tdItems[i].fieldType.equals(tupleDesc.tdItems[i].fieldType))
+                        return false;
+                return  true;
+            }
+        }
         // some code goes here
         return false;
     }
@@ -182,6 +213,12 @@ public class TupleDesc implements Serializable {
      */
     public String toString() {
         // some code goes here
-        return "";
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i < numFields()-1; i++)
+        {
+            sb.append(tdItems[i].fieldType).append("(").append(tdItems[i].fieldName).append("),");
+        }
+        sb.append(tdItems[numFields()-1].fieldType).append("(").append(tdItems[numFields()-1].fieldName).append("),");
+        return sb.toString();
     }
 }
